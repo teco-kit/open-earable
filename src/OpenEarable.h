@@ -30,7 +30,7 @@
 #include <utility>
 
 const String device_name = "OpenEarable";
-const String firmware_version = "1.3.0";
+const String firmware_version = "1.3.1b";
 const String hardware_version = "1.3.0";
 
 bool _data_logger_flag = false;
