@@ -65,6 +65,33 @@ void SD_Logger::write_header() {
 
 bool SD_Logger::open_file() {
     if (_opened) return true;
+    // find the next available file name for the recording
+    const String logs_dir = "Logs";
+
+    if (!sd_manager.exists(logs_dir)) sd_manager.mkdir(logs_dir);
+
+    ExFile file;
+    ExFile dir = sd_manager.sd->open(logs_dir);
+
+    char fileName[64];
+    char * split;
+
+    int n = 1;
+
+    // find highest Recording number
+    while (file = dir.openNextFile()) {
+        file.getName(fileName, sizeof(fileName));
+
+        split = strtok(fileName, "_");
+        if (strcmp(split,"Logs") == 0) {
+            split = strtok(NULL, "_");
+            n = max(n, atoi(split) + 1);
+        }
+    }
+
+    // file name of the new recording
+    _name = "/" + logs_dir + "/Log_" + String(n) + "_" + String(millis()) + ".wav";
+
     _file = sd_manager.openFile(_name, true);
     _opened = _file.isOpen();
     return _opened;
