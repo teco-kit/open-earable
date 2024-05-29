@@ -33,7 +33,7 @@ const String device_name = "OpenEarable";
 const String firmware_version = "1.3.1b";
 const String hardware_version = "1.3.0";
 
-bool _data_logger_flag = false;
+bool _data_logger_flag = true;
 
 void data_callback(int id, unsigned int timestamp, uint8_t * data, int size);
 void config_callback(SensorConfigurationPacket *config);
@@ -51,7 +51,7 @@ public:
         sd_manager.begin();
 
         edge_ml_generic.set_config_callback(config_callback);
-        //edge_ml_generic.set_data_callback(data_callback);
+        edge_ml_generic.set_data_callback(data_callback);
 
         if (_debug) {
             _battery->debug(*_debug);
