@@ -43,7 +43,7 @@ public:
     OpenEarable() = default;
 
     void begin() {
-        Serial.begin(0);
+        // Serial.begin(0);
 
         _interface = new SensorManager_Earable();
         _battery = new Battery_Service();
