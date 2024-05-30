@@ -55,9 +55,11 @@ public:
 
         if (_debug) {
             _battery->debug(*_debug);
+            SD_Logger::debug(*_debug);
         }
 
         if (_data_logger_flag) {
+            _debug->println("Starting SDLogger");
             SD_Logger::begin();
         }
 
