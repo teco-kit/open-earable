@@ -3,16 +3,18 @@
 
 #include "utils/SDManager.h"
 #include "EdgeML_Custom.h"
+#include <generic/Debug.h>
 
 // #define LOGGER_BUFFER_SIZE 1024
 #define LOGGER_BUFFER_SIZE 2048
 
-class SD_Logger {
+class SD_Logger{
 public:
     static bool begin();
     static void end();
 
     static void set_name(String name);
+    static void debug(Stream &stream);
 
     static void data_callback(int, unsigned int, const String&);
 private:
