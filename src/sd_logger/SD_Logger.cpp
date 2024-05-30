@@ -7,6 +7,7 @@ bool SD_Logger::_opened = false;
 char SD_Logger::_buffer[LOGGER_BUFFER_SIZE];
 int SD_Logger::_index = 0;
 String SD_Logger::_name = "Log.csv";
+Stream * _debug{};
 
 bool SD_Logger::begin() {
     _index = 0;
@@ -15,6 +16,11 @@ bool SD_Logger::begin() {
     if (!open_file()) return false;
     write_header();
     return _file.isOpen();
+}
+
+void SD_Logger::debug(Stream &stream) {
+    _debug = &stream;
+    _debug->println("SDLogger debug set correctly!");
 }
 
 void SD_Logger::end() {
