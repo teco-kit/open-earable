@@ -12,7 +12,7 @@ Stream * _debug{};
 bool SD_Logger::begin() {
     _index = 0;
     if(!sd_manager.begin()) return false;
-    sd_manager.remove(_name);
+    if (_debug) _debug->println("Initialising file");
     if (!open_file()) return false;
     write_header();
     return _file.isOpen();
@@ -89,14 +89,19 @@ bool SD_Logger::open_file() {
         file.getName(fileName, sizeof(fileName));
 
         split = strtok(fileName, "_");
-        if (strcmp(split,"Logs") == 0) {
+        if (strcmp(split,"Log") == 0) {
             split = strtok(NULL, "_");
             n = max(n, atoi(split) + 1);
         }
     }
 
     // file name of the new recording
-    _name = "/" + logs_dir + "/Log_" + String(n) + "_" + String(millis()) + ".wav";
+    _name = "/" + logs_dir + "/Log_" + String(n) + "_" + String(millis()) + ".csv";
+
+    if (_debug) {
+        _debug->println("Log filename:");
+        _debug->println(_name);
+    }
 
     _file = sd_manager.openFile(_name, true);
     _opened = _file.isOpen();
