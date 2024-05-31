@@ -25,7 +25,7 @@
 
 #include <task_manager/TaskManager.h>
 
-#include <sd_logger/SD_Logger.h>
+#include <sd_logger/IMU_Logger.h>
 
 #include <utility>
 
@@ -55,12 +55,12 @@ public:
 
         if (_debug) {
             _battery->debug(*_debug);
-            SD_Logger::debug(*_debug);
+            IMU_Logger::debug(*_debug);
         }
 
         if (_data_logger_flag) {
             _debug->println("Starting SDLogger");
-            SD_Logger::begin();
+            IMU_Logger::begin();
         }
 
         // Can both be initialized without extra cost
@@ -131,7 +131,7 @@ private:
     static void data_callback(int id, unsigned int timestamp, uint8_t * data, int size) {
         if (_data_logger_flag) {
             String data_string = edge_ml_generic.parse_to_string(id, data);
-            SD_Logger::data_callback(id, timestamp, data_string);
+            IMU_Logger::data_callback(id, timestamp, data_string);
         }
     }
 
