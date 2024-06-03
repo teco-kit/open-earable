@@ -26,6 +26,7 @@
 #include <task_manager/TaskManager.h>
 
 #include <sd_logger/IMU_Logger.h>
+#include <sd_logger/BARO_Logger.h>
 
 #include <utility>
 
@@ -55,12 +56,14 @@ public:
 
         if (_debug) {
             _battery->debug(*_debug);
-            IMU_Logger::debug(*_debug);
+            IMULogger::debug(*_debug);
+            BAROLogger::debug(*_debug);
         }
 
         if (_data_logger_flag) {
             _debug->println("Starting SDLogger");
-            IMU_Logger::begin();
+            IMULogger::begin();
+            BAROLogger::begin();
         }
 
         // Can both be initialized without extra cost
@@ -131,7 +134,8 @@ private:
     static void data_callback(int id, unsigned int timestamp, uint8_t * data, int size) {
         if (_data_logger_flag) {
             String data_string = edge_ml_generic.parse_to_string(id, data);
-            IMU_Logger::data_callback(id, timestamp, data_string);
+            if (id == BARO_TEMP) BAROLogger::data_callback(id, timestamp, data_string);
+            else if (id == ACC_GYRO_MAG) IMULogger::data_callback(id, timestamp, data_string);
         }
     }
 
@@ -142,8 +146,8 @@ OpenEarable open_earable;
 
 void OpenEarable::config_callback(SensorConfigurationPacket *config) {
     if (config->sensorId == PDM_MIC) Recorder::config_callback(config);
-    else if (config->sensorId == BARO_TEMP) task_manager.begin(config->sampleRate, -1);
-    else if (config->sensorId == ACC_GYRO_MAG) task_manager.begin(-1, config->sampleRate);
+    else if (config->sensorId == BARO_TEMP) BAROLogger::config_callback(config);
+    else if (config->sensorId == ACC_GYRO_MAG) IMULogger::config_callback(config);
     else {
         if (i2s_player.is_running()) {
             i2s_player.stop();
