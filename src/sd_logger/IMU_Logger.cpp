@@ -51,13 +51,14 @@ void IMULogger::data_callback(int id, unsigned int timestamp, const String & dat
 }
 
 void IMULogger::config_callback(SensorConfigurationPacket *config) {
+    
     if (config->sampleRate == 0) {
-        if (_file.isOpen()){
+        if (_opened){
             dump_to_sd();
             _file.close();
             _opened = false;
-            return;
         }
+        return;
     }
 
     if (_imu_debug) _imu_debug->println("Initialising imu file");

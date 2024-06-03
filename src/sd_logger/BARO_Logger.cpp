@@ -53,12 +53,12 @@ void BAROLogger::data_callback(int id, unsigned int timestamp, const String & da
 void BAROLogger::config_callback(SensorConfigurationPacket *config) {
     
     if (config->sampleRate == 0) {
-        if (_file.isOpen()){
+        if (_opened){
             dump_to_sd();
             _file.close();
             _opened = false;
-            return;
         }
+        return;
     }
 
     if (_baro_debug) _baro_debug->println("Initialising baro file");
