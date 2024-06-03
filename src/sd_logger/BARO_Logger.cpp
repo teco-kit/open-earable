@@ -81,7 +81,7 @@ void BAROLogger::dump_to_sd() {
 
 void BAROLogger::write_header() {
     _index = 0;
-    String header = "ID, TIMESTAMP, Data1, Data2";
+    String header = "ID, TIMESTAMP, Data1, Data2\n\r ";
     header.toCharArray(&(_buffer[_index]), header.length());
     _index += header.length() - 1; // -1 to remove null terminator
     dump_to_sd();
