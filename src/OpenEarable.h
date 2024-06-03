@@ -36,6 +36,8 @@ const String hardware_version = "1.3.0";
 
 bool _data_logger_flag = true;
 
+uint8_t led_color[3] = {0, 0, 0};
+
 void data_callback(int id, unsigned int timestamp, uint8_t * data, int size);
 void config_callback(SensorConfigurationPacket *config);
 
@@ -140,9 +142,42 @@ private:
     }
 
     static void config_callback(SensorConfigurationPacket *config);
+    static void update_current_led_status(SensorConfigurationPacket *config);
 };
 
 OpenEarable open_earable;
+
+void OpenEarable::update_current_led_status(SensorConfigurationPacket *config){
+
+    if (config->sensorId == PDM_MIC) {
+        if (int(config->sampleRate) > 0) {
+            led_color[0] = 255;
+        } else {
+            led_color[0] = 0;
+        }
+    } else if (config->sensorId == BARO_TEMP) {
+        if (int(config->sampleRate) > 0) {
+            led_color[1] = 255;
+        } else {
+            led_color[1] = 0;
+        }
+    } else if (config->sensorId == ACC_GYRO_MAG) {
+        if (int(config->sampleRate) > 0) {
+            led_color[2] = 255;
+        } else {
+            led_color[2] = 0;
+        }
+    }
+
+    if (open_earable._debug) {
+        open_earable._debug->println("Current_status: ");
+        for (int i = 0; i < 3; i++) {
+            open_earable._debug->println(led_color[i]);
+        }
+    }
+
+    earable_led.set_color(led_color);
+}
 
 void OpenEarable::config_callback(SensorConfigurationPacket *config) {
     if (config->sensorId == PDM_MIC) Recorder::config_callback(config);
@@ -155,6 +190,7 @@ void OpenEarable::config_callback(SensorConfigurationPacket *config) {
             i2s_player.start();
         }
     }
+    update_current_led_status(config);
     //else task_manager.begin();
 }
 
