@@ -2,37 +2,34 @@
 
 #include <utility>
 
-ExFatFile BARO_Logger::_file;
-bool BARO_Logger::_opened = false;
-char BARO_Logger::_buffer[LOGGER_BUFFER_SIZE];
-int BARO_Logger::_index = 0;
-String BARO_Logger::_name = "Baro.csv";
-Stream * _debug{};
+ExFatFile BAROLogger::_file;
+bool BAROLogger::_opened = false;
+char BAROLogger::_buffer[LOGGER_BUFFER_SIZE];
+int BAROLogger::_index = 0;
+String BAROLogger::_name = "Baro.csv";
+Stream * _baro_debug{};
 
-bool BARO_Logger::begin() {
+bool BAROLogger::begin() {
     _index = 0;
     if(!sd_manager.begin()) return false;
-    if (_debug) _debug->println("Initialising baro file");
-    if (!open_file()) return false;
-    write_header();
-    return _file.isOpen();
+    return true;
 }
 
-void BARO_Logger::debug(Stream &stream) {
-    _debug = &stream;
-    _debug->println("BAROLogger debug set correctly!");
+void BAROLogger::debug(Stream &stream) {
+    _baro_debug = &stream;
+    _baro_debug->println("BAROLogger debug set correctly!");
 }
 
-void BARO_Logger::end() {
+void BAROLogger::end() {
     //sd_manager.end();
 }
 
-void BARO_Logger::set_name(String name) {
+void BAROLogger::set_name(String name) {
     _name = std::move(name);
     _opened = false;
 }
 
-void BARO_Logger::data_callback(int id, unsigned int timestamp, const String & data_string) {
+void BAROLogger::data_callback(int id, unsigned int timestamp, const String & data_string) {
     if (id == -1) {
         dump_to_sd();
         _file.close();
@@ -53,7 +50,28 @@ void BARO_Logger::data_callback(int id, unsigned int timestamp, const String & d
     _index += text.length() - 1; // -1 to remove null terminator
 }
 
-void BARO_Logger::dump_to_sd() {
+void BAROLogger::config_callback(SensorConfigurationPacket *config) {
+    
+    if (config->sampleRate == 0) {
+        if (_file.isOpen()){
+            dump_to_sd();
+            _file.close();
+            _opened = false;
+            return;
+        }
+    }
+
+    if (_baro_debug) _baro_debug->println("Initialising baro file");
+    if (!open_file()){ 
+        if (_baro_debug) _baro_debug->println("Error opening the BARO file");
+        return;
+    }
+    write_header();
+    if (_file.isOpen())
+        task_manager.begin(config->sampleRate, -1);
+}
+
+void BAROLogger::dump_to_sd() {
     if (!open_file()) return;
     if (_index == 0) return;
     sd_manager.write_block(&_file, (uint8_t*)_buffer, _index);
@@ -61,7 +79,7 @@ void BARO_Logger::dump_to_sd() {
     _index = 0;
 }
 
-void BARO_Logger::write_header() {
+void BAROLogger::write_header() {
     _index = 0;
     String header = "ID, TIMESTAMP, Data1, Data2";
     header.toCharArray(&(_buffer[_index]), header.length());
@@ -69,7 +87,7 @@ void BARO_Logger::write_header() {
     dump_to_sd();
 }
 
-bool BARO_Logger::open_file() {
+bool BAROLogger::open_file() {
     if (_opened) return true;
     // find the next available file name for the recording
     const String logs_dir = "Baro";
@@ -98,9 +116,9 @@ bool BARO_Logger::open_file() {
     // file name of the new recording
     _name = "/" + logs_dir + "/Baro_" + String(n) + "_" + String(millis()) + ".csv";
 
-    if (_debug) {
-        _debug->println("Log filename:");
-        _debug->println(_name);
+    if (_baro_debug) {
+        _baro_debug->println("Log filename:");
+        _baro_debug->println(_name);
     }
 
     _file = sd_manager.openFile(_name, true);
