@@ -12,7 +12,7 @@
 #include "OpenEarable.h"
 
 // Set DEBUG to true in order to enable debug print
-#define DEBUG false
+#define DEBUG true
 
 void setup()
 {
