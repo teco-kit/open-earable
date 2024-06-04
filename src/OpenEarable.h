@@ -58,6 +58,7 @@ public:
             _battery->debug(*_debug);
             IMULogger::debug(*_debug);
             BAROLogger::debug(*_debug);
+            Recorder::debug(*_debug);
         }
 
         if (_data_logger_flag) {

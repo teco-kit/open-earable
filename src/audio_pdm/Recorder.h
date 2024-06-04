@@ -5,6 +5,7 @@
 #include "EdgeML_Custom.h"
 
 #include "utils/SDManager.h"
+#include <generic/Debug.h>
 
 #include "AudioTarget.h"
 #include "utils/BufferedInputStream.h"
@@ -36,6 +37,7 @@ public:
     void print_info();
 
     static void config_callback(SensorConfigurationPacket * config);
+    static void debug(Stream &stream);
     
     AudioTarget * target;
     InputDevice * device;

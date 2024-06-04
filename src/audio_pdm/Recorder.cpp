@@ -3,6 +3,8 @@
 
 uint8_t PDM_BUFFER[pdm_b_size * pdm_b_count] __attribute__((aligned (16)));
 
+Stream * _rec_debug{};
+
 Recorder::Recorder() {
 
 }
@@ -39,6 +41,11 @@ void Recorder::end() {
     device->end();
     target->end();
     _available = false;
+}
+
+void Recorder::debug(Stream &stream) {
+    _rec_debug = &stream;
+    _rec_debug->println("Recorder debug set correctly!");
 }
 
 void Recorder::print_info() {
@@ -147,6 +154,11 @@ void Recorder::config_callback(SensorConfigurationPacket *config) {
 
     // file name of the new recording
     String file_name = "/" + recording_dir + "/Recording_" + String(n) + "_" + String(millis()) + ".wav";
+
+    if (_rec_debug) {
+        _rec_debug->println("Recording:");
+        _rec_debug->println(file_name);
+    }
 
     // set WaveRecorder
     recorder.setTarget(new WavRecorder(file_name));
