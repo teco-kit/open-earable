@@ -37,8 +37,7 @@ void BAROLogger::data_callback(int id, unsigned int timestamp, const String & da
         return;
     };
 
-    String text = String(id);
-    text += ", " + String(timestamp);
+    String text = String(timestamp);
     text += ", " + data_string;
     text += "\r\n";
 
@@ -81,7 +80,7 @@ void BAROLogger::dump_to_sd() {
 
 void BAROLogger::write_header() {
     _index = 0;
-    String header = "ID, TIMESTAMP, Data1, Data2\n\r ";
+    String header = "timestamp,temp,pressure\n\r ";
     header.toCharArray(&(_buffer[_index]), header.length());
     _index += header.length() - 1; // -1 to remove null terminator
     dump_to_sd();

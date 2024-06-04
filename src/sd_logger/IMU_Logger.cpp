@@ -37,8 +37,7 @@ void IMULogger::data_callback(int id, unsigned int timestamp, const String & dat
         return;
     };
 
-    String text = String(id);
-    text += ", " + String(timestamp);
+    String text = String(timestamp);
     text += ", " + data_string;
     text += "\r\n";
 
@@ -81,7 +80,7 @@ void IMULogger::dump_to_sd() {
 
 void IMULogger::write_header() {
     _index = 0;
-    String header = "ID, TIMESTAMP, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9\n\r";
+    String header = "timestamp,acc_x,acc_y,acc_z,acc_x,gyro_y,gyro_z,magn_x,magn_y,magn_z\n\r";
     header.toCharArray(&(_buffer[_index]), header.length());
     _index += header.length() - 1; // -1 to remove null terminator
     dump_to_sd();
