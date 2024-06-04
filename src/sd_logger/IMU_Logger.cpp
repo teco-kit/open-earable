@@ -37,8 +37,7 @@ void IMULogger::data_callback(int id, unsigned int timestamp, const String & dat
         return;
     };
 
-    String text = String(id);
-    text += ", " + String(timestamp);
+    String text = String(timestamp);
     text += ", " + data_string;
     text += "\r\n";
 
