@@ -81,7 +81,7 @@ void IMULogger::dump_to_sd() {
 
 void IMULogger::write_header() {
     _index = 0;
-    String header = "sensor_id,timestamp,acc_x,acc_y,acc_z,acc_x,gyro_y,gyro_z,magn_x,magn_y,magn_z\n\r";
+    String header = "timestamp,acc_x,acc_y,acc_z,acc_x,gyro_y,gyro_z,magn_x,magn_y,magn_z\n\r";
     header.toCharArray(&(_buffer[_index]), header.length());
     _index += header.length() - 1; // -1 to remove null terminator
     dump_to_sd();
