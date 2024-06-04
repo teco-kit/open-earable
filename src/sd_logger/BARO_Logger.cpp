@@ -81,7 +81,7 @@ void BAROLogger::dump_to_sd() {
 
 void BAROLogger::write_header() {
     _index = 0;
-    String header = "timestamp,temp,pressure\n\r ";
+    String header = "sensor_id,timestamp,temp,pressure\n\r ";
     header.toCharArray(&(_buffer[_index]), header.length());
     _index += header.length() - 1; // -1 to remove null terminator
     dump_to_sd();
