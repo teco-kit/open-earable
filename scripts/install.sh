@@ -21,7 +21,14 @@ echo $MBED_NANO_VERSION
 OS=$(uname)
 
 # Path to your Arduino15 folder (replace with your actual path)
-ARDUINO_15_PATH="/path/to/Arduino15"
+if [[ "$os" == "Linux" ]]; then
+  echo "This is a Linux system."
+  ARDUINO_15_PATH = "/home/$(whoami)/.arduino15"
+elif [[ "$os" == "Darwin" ]]; then
+  echo "This is a macOS system."
+  ARDUINO_15_PATH = "/Users/$(whoami)/Library/Arduino15"
+
+echo $ARDUINO_15_PATH
 
 # Resources folder path (replace with your actual path)
 RESOURCES_PATH="../resources"
