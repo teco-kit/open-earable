@@ -51,16 +51,10 @@ WIRE_DIR="$RESOURCES_PATH/wire_files/Wire"
 VARIANT_DIR="$RESOURCES_PATH/variant"
 
 # Navigate to libraries directory
-LIB_DIR="$ARDUINO_15_PATH/packages/arduino/hardware/mbed_nano/4.0.4/libraries"
+LIB_DIR="$ARDUINO_15_PATH/packages/arduino/hardware/mbed_nano/$MBED_NANO_VERSION/libraries"
 
-# Check mbed_nano version (modify if needed)
-MBED_NANO_VERSION="4.0.4"
-
-# Install mbed_nano board (if not already installed)
-if ! grep -q "mbed_nano:$MBED_NANO_VERSION" boards.txt; then
-  echo "Installing mbed_nano board version $MBED_NANO_VERSION..."
-  arduino-cli boards install arduino:mbed_nano:$MBED_NANO_VERSION
-fi
+# Create new board folder
+NEW_LIB_DIR="$ARDUINO_15_PATH/packages/arduino/hardware/mbed_nano/$MBED_NANO_VERSION/libraries"
 
 # Replace SPI library
 echo "Replacing SPI library..."
