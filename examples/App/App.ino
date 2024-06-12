@@ -18,7 +18,9 @@ void setup()
 {
 #if DEBUG
   Serial.begin(115200);
+  delay(5000);
   open_earable.debug(Serial);
+  delay(5000);
 #endif
 
     open_earable.begin();
