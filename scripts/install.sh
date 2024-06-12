@@ -1,4 +1,24 @@
 #!/bin/bash
+# Install board
+echo "Installing mbed_nano board version"
+arduino-cli core install arduino:mbed_nano
+
+# Install dependecies
+# Install EDGEML (1.3.3)
+echo "Installing libraries..."
+arduino-cli lib install EdgeML-Arduino@1.3.3
+arduino-cli lib install 'Adafruit BMP280 Library'
+arduino-cli lib install "DFRobot_BMX160"
+arduino-cli lib install "SdFat - Adafruit Fork"
+
+
+tmp_output=$(arduino-cli core search arduino:mbed_nano | grep arduino:mbed_nano)
+MBED_NANO_VERSION=$(echo "$tmp_output" | grep -Eo '[0-9]+\.[0-9]+\.[0-9]+')
+$version_number
+
+echo $MBED_NANO_VERSION
+
+OS=$(uname)
 
 # Path to your Arduino15 folder (replace with your actual path)
 ARDUINO_15_PATH="/path/to/Arduino15"
