@@ -1,0 +1,5 @@
+{
+    "board": "arduino:openearable:nano33ble",
+    "sketch": "examples/App/App.ino",
+    "port": "/dev/tty.usbmodem11201"
+}
