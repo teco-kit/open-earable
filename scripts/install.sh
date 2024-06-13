@@ -96,7 +96,7 @@ cp "$RESOURCES_PATH/variant/pins_arduino.h" "$ARDUINO_15_PATH/packages/arduino/h
 cp "$RESOURCES_PATH/variant/variant.cpp" "$ARDUINO_15_PATH/packages/arduino/hardware/openearable/$MBED_NANO_VERSION/variants/ARDUINO_NANO33BLE"
 
 # sdFat Library Setup
-SDFAT_LIB_DIR="$HOME/Documents/Arduino/libraries/SdFat_-_Adafruit_Fork"  # Update path if needed
+SDFAT_LIB_DIR="$HOME/Documents/Arduino/libraries/SdFat_-_Adafruit_Fork/src"  # Update path if needed
 
 # Check if sDFat library exists
 if [ ! -d "$SDFAT_LIB_DIR" ]; then
