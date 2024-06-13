@@ -11,13 +11,16 @@ OpenEarable is a new, open-source, Arduino-based platform for ear-based sensing 
 
 ## Table of Contents
 - [Introduction](#Introduction)
+  - [Note about v1.4.0](#note-about-v140)
 - [Setup](#Setup)
-  - [Arduino IDE](#Arduino-IDE) 
-  - [Arduino Libraries](#Arduino-Libraries)
-  - [SD Card Setup](#SD-Card-Setup)
-  - [SPI Setup](#SPI-Setup)
-  - [sdfat Library Setup](#sdfat-Library-Setup)
-  - [BMP280 Library Setup](#BMP280-Library-Setup)
+  - [Automatic setup (Preferred)](#automatic-setup-preferred-method)
+  - [Manual setup (Not recommended)](#manual-setup-not-recommended)
+    - [Arduino IDE](#Arduino-IDE)
+    - [Arduino Libraries](#Arduino-Libraries)
+    - [SD Card Setup](#SD-Card-Setup)
+    - [SPI Setup](#SPI-Setup)
+    - [sdfat Library Setup](#sdfat-Library-Setup)
+    - [BMP280 Library Setup](#BMP280-Library-Setup)
 - [Usage](#Usage)
   - [Install OpenEarable](#Install-OpenEarable)
   - [Default Firmware](#Default-Firmware)
@@ -38,7 +41,14 @@ OpenEarable is a new, open-source, Arduino-based platform for ear-based sensing 
 OpenEarable is designed to enable ear-based sensing applications by offering a flexible and open-source hardware platform. It incorporates a range of sensors, including a 9-axis inertial measurement unit, an ear canal pressure and temperature sensor, an inward-facing ultrasound microphone, a speaker, a push button, and a controllable RGB LED. With these features, OpenEarable provides researchers and developers with the ability to explore various application scenarios. 
 For more information visit the [OpenEarable](https://open-earable.teco.edu/) website.
 
-OpenEarable is controlled and streams sensor data via BLE (Bluetooth Low Energy). Audio is played from and recorded to the internal SD card (required card SanDisk Extreme Class 3, must be formatted as exFAT). OpenEarable is compatible with the provided [dashboard](https://github.com/OpenEarable/dashboard) and [edge-ml](https://edge-ml.org/). 
+OpenEarable is controlled and streams sensor data via BLE (Bluetooth Low Energy). Audio is played from and recorded to the internal SD card (required card SanDisk Extreme Class 3, must be formatted as exFAT). OpenEarable is compatible with the provided [dashboard](https://github.com/OpenEarable/dashboard) and [edge-ml](https://edge-ml.org/).
+
+### Note about v1.4.0
+
+Version 1.4.0 of the firmware is designed for offline data collection. By default, all data (IMU, Baro/Temp and Audio) are logged on the SD card. **Choose a very fast SDCard!!** Here's some examples we tested:
+- Samsung EVO Plus
+- SanDisk Extreme Pro
+Note that even for the same class, not all SDcard from different manufacturers have the same performance!!
 
 
 ## Setup
