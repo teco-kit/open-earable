@@ -19,7 +19,7 @@ private:
 
     //float _rate_factor = 1.25;
 
-    int _edge_ml_delay;
+    int _edge_ml_delay = 100;
     unsigned int _edge_ml_last;
     unsigned int _baro_last;
     unsigned int _imu_last;
