@@ -45,28 +45,54 @@ OpenEarable is controlled and streams sensor data via BLE (Bluetooth Low Energy)
 
 ### Note about v1.4.0
 
+#### SD card logging
+
 Version 1.4.0 of the firmware is designed for offline data collection. By default, all data (IMU, Baro/Temp and Audio) are logged on the SD card. **Choose a very fast SDCard!!** Here's some examples we tested:
 - Samsung EVO Plus
 - SanDisk Extreme Pro
 Note that even for the same class, not all SDcard from different manufacturers have the same performance!!
+
+#### Bluetooth streaming
+
+Because the main focus is to log the data locally on the SD card, this version of the firmware streams limited amount of data over BLE. By default, the streaming over BLE happens at 10 Hz, no matter what sampling rate you set for the recordings.
+
+#### RGB led
+
+In order to let researcher know whether the device is recording or not without being always connected to the dashboard, the RGB led is used to show the recording status. If a certain colour is on, then the corresponding sensor data is being recorded:
+
+- Red: Microphone
+- Green: Baro/Temp
+- Blue: IMU
+
+Obviously, any combination of sensors enabled/disable will result in a mixed colour for the led (within the hardware limits!!) (i.e. if microphone and baro/tempo are being recorded then the led would be yellow).
 
 
 ## Setup
 
 ### Automatic setup (Preferred method!!)
 
+Clone this repo in your Arduino library folder, usually in under `Documents/Arduino/libraries`:
+
+```bash
+git clone https://github.com/ThiasTux/open-earable OpenEarable
+```
+
 If you are on Linux or macOS, you can setup you environment using the script in `script/install.sh`. In order to so, please install the `arduino-cli` following the guide [here](https://arduino.github.io/arduino-cli/0.35/installation/).
 
 #### macOS
 For macos using brew:
 
-```brew install arduino-cli```
+```bash
+brew install arduino-cli
+```
 
 #### Env setup
 
 To setup the environment, navigate to `scripts` and then run:
 
-```./install.sh```
+```bash
+./install.sh
+```
 
 The script uses `arduino-cli` to download and install all the dependencies (i.e. board, libraries, etc.) and to make the required changes to the libraries. The script also generate a new board so that the original Mbed OS Nano installation remains untouched in case you are developing also with other Nano boards (plus it doesn't get touched if the Nano board installation gets updated).
 
