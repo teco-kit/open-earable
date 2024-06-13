@@ -124,6 +124,7 @@ The BMP280 library has to be slightly modified.
 To make sure that all your changes are applied correctly, restart your computer.
 
 ## Usage
+
 ### Install OpenEarable
 Now that all dependencies are configured, the last step is to install this repository as a library as follows:
 
@@ -158,7 +159,7 @@ void loop()
 With this minimum sketch, all internal functionality is activated and OpenEarable becomes controllable via our [Dashboard](https://github.com/OpenEarable/dashboard), via [EdgeML](https://edge-ml.org/), and via the BLE API.
 
 ### Flashing
-To flash the firmware, make sure you select `Arduino Nano 33 BLE` as target and the port that your OpenEarable is connected to. Then simply press the `Upload` arrow.
+To flash the firmware, make sure you select `Openearable` as target (or `Arduino Nano 33 BLE` if you used the manual setup procedure) and the port that your OpenEarable is connected to. Then simply press the `Upload` arrow.
 
 ### Dashboard
 
