@@ -50,6 +50,7 @@ OpenEarable is controlled and streams sensor data via BLE (Bluetooth Low Energy)
 Version 1.4.0 of the firmware is designed for offline data collection. By default, all data (IMU, Baro/Temp and Audio) are logged on the SD card. **Choose a very fast SDCard!!** Here's some examples we tested:
 - Samsung EVO Plus
 - SanDisk Extreme Pro
+
 Note that even for the same class, not all SDcard from different manufacturers have the same performance!!
 
 #### Bluetooth streaming
