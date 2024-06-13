@@ -43,10 +43,29 @@ OpenEarable is controlled and streams sensor data via BLE (Bluetooth Low Energy)
 
 ## Setup
 
-### Arduino IDE
+### Automatic setup (Preferred method!!)
+
+If you are on Linux or macOS, you can setup you environment using the script in `script/install.sh`. In order to so, please install the `arduino-cli` following the guide [here](https://arduino.github.io/arduino-cli/0.35/installation/).
+
+#### macOS
+For macos using brew:
+
+```brew install arduino-cli```
+
+#### Env setup
+
+To setup the environment, navigate to `scripts` and then run:
+
+```./install.sh```
+
+The script uses `arduino-cli` to download and install all the dependencies (i.e. board, libraries, etc.) and to make the required changes to the libraries. The script also generate a new board so that the original Mbed OS Nano installation remains untouched in case you are developing also with other Nano boards (plus it doesn't get touched if the Nano board installation gets updated).
+
+### Manual setup (Not recommended)
+
+#### Arduino IDE
 Download and install the Arduino IDE. OpenEarable is based on the "Arduino Nano 33 BLE Sense" board. Therefore, you first have to install the required dependencies ("Arduino Mbed OS Nano Boards" via boards manager) in your Arduino IDE following this [Setup Guide](https://docs.arduino.cc/software/ide-v2/tutorials/ide-v2-board-manager#mbed-os-nano).
 
-### Arduino Libraries
+#### Arduino Libraries
 The following Arduino Libraries have to be installed in your Arduino IDE by navigating to `Sketch -> Include Library -> Manage Libraries`:
 - [EdgeML-Arduino (version 1.3.3)](https://github.com/edge-ml/EdgeML-Arduino), which includes the following dependencies that are also required and automatically installed:
 	- [ArduinoBLE](https://github.com/arduino-libraries/ArduinoBLE)
@@ -55,11 +74,11 @@ The following Arduino Libraries have to be installed in your Arduino IDE by navi
 - [SdFat - Adafruit Fork](https://github.com/adafruit/SdFat)
 
 
-### SD Card Setup
+#### SD Card Setup
 In order to be compatible with the OpenEarable library the SD card needs to be formatted with the exFAT format.
 Make sure to have a sufficiently fast SD card. (Required SD Card: SandDisk class 10 and class A30)
 
-### SPI, Wire, and Variant Setup
+#### SPI, Wire, and Variant Setup
 
 The default Arduino implementation of the SPI library does not meet the required speed. To address this, optimized SPI files are provided. Follow the steps below to integrate these files into Arduino.
 All referenced files can be found in the "resources" folder in the "spi_files" subfolder.
@@ -86,7 +105,7 @@ To fully integrate the optimized SPI files, changes to the Arduino Nano 33 BLE b
     
 10. Navigate back to the `Arduino15` folder. Navigate to `packages/arduino/hardware/mbed_nano/4.0.4/variants/ARDUINO_NANO33BLE`. Replace `pins_arduino.h` and `variant.cpp `with the files provided under `resources/variant` of this repository.
 
-### sdFat Library Setup
+#### sdFat Library Setup
 One of the library dependencies is the SdFat library from Bill Greiman.
 This library is used to send data to the SD card.
 To achieve the desired write speeds of up to 1.5Mbps the library has to be modified slighlty.
@@ -95,13 +114,13 @@ To achieve the desired write speeds of up to 1.5Mbps the library has to be modif
    
 3. Inside the `src` folder, replace the `SdFatConfig.h` with the provided `SdFatConfig.h` file found in the `resources/sdfat_config` folder of this repository.
 
-### BMP280 Library Setup
+#### BMP280 Library Setup
 The BMP280 library has to be slightly modified.
 1. Go to the `Arduino/libraries` folder (commonly found in your `Documents` folder) and locate the `Adafruit_BMP280_Library` folder.
 2. Replace the files `Adafruit_BMP280.cpp` and `Adafruit_BMP280.h` with the files found in the `resources/Adafruit_BMP280_Library` folder of this repository.
    
 
-### Reboot
+#### Reboot
 To make sure that all your changes are applied correctly, restart your computer.
 
 ## Usage
