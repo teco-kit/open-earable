@@ -43,7 +43,7 @@ For more information visit the [OpenEarable](https://open-earable.teco.edu/) web
 
 OpenEarable is controlled and streams sensor data via BLE (Bluetooth Low Energy). Audio is played from and recorded to the internal SD card (required card SanDisk Extreme Class 3, must be formatted as exFAT). OpenEarable is compatible with the provided [dashboard](https://github.com/OpenEarable/dashboard) and [edge-ml](https://edge-ml.org/).
 
-### Note about v1.4.0
+### Note about firmwares >v1.4.0
 
 #### SD card logging
 
@@ -66,6 +66,16 @@ In order to let researcher know whether the device is recording or not without b
 - Blue: IMU
 
 Obviously, any combination of sensors enabled/disable will result in a mixed colour for the led (within the hardware limits!!) (i.e. if microphone and baro/tempo are being recorded then the led would be yellow).
+
+#### Device naming
+
+The new firmware introduces the possibility to change the names of the devices programmatically. This simplifies the usage in data collections where a left and a right earable are used. By default, the name is "OpenEarable" as per previous firmwares.
+The left or right names can be given when programming and **MUST BE** `OELeft` or `OERight`.
+The firmware will then 
+
+#### Dashboard
+
+In order to use the new version of the firmware, especially if the custom names are used for left/right earables, we suggest to use the modified dashboard available [here](https://github.com/ThiasTux/openearable-dashboard).
 
 
 ## Setup

@@ -30,8 +30,8 @@
 
 #include <utility>
 
-const String device_name = "OpenEarable";
-const String firmware_version = "1.4.0";
+String device_name;
+const String firmware_version = "1.4.1";
 const String hardware_version = "1.3.0";
 
 bool _data_logger_flag = true;
@@ -45,8 +45,9 @@ class OpenEarable {
 public:
     OpenEarable() = default;
 
-    void begin() {
-        // Serial.begin(0);
+    void begin(String d_name) {
+
+        device_name = d_name;
 
         _interface = new SensorManager_Earable();
         _battery = new Battery_Service();
@@ -64,7 +65,6 @@ public:
         }
 
         if (_data_logger_flag) {
-            _debug->println("Starting SDLogger");
             IMULogger::begin();
             BAROLogger::begin();
         }
