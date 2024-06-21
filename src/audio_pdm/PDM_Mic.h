@@ -70,7 +70,7 @@ private:
     int _channels = 1;
     int _sampleRate = 16000;
 
-    int _gain = 80;
+    int _gain = 40;
 
     bool _first = true;
 
