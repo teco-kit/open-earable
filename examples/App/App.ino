@@ -12,10 +12,10 @@
 #include "OpenEarable.h"
 
 // Set DEBUG to true in order to enable debug print
-#define DEBUG false
+#define DEBUG true
 
 // Change name to OELeft or OERight before flashing ("OpenEarable" if left as default value)
-String d_name = "OpenEarable";
+String d_name = "OERight";
 
 void setup()
 {
