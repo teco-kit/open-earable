@@ -50,9 +50,10 @@ public:
     void setGain(int gain);
 
     void setPins(int dinPin, int clkPin);
-    void setChannels(int channels);
+    int setChannels(int channels) override;
 
     int getSampleRate() override;
+    int getChannels() override;
 
     void setBlockBufferSizes(int blockSize, int blockCount);
 
@@ -70,7 +71,7 @@ private:
     int _channels = 1;
     int _sampleRate = 16000;
 
-    int _gain = 40;
+    int _gain = 60;
 
     bool _first = true;
 

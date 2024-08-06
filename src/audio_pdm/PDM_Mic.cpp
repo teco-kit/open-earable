@@ -130,7 +130,7 @@ bool PDM_Mic::begin() {
     // clear the buffer
     stream->buffer.reset();
 
-    nrf_pdm_buffer_set((uint32_t*)stream->buffer.getWritePointer(), stream->buffer.getBlockSize() / (sizeof(int16_t) * _channels));
+    nrf_pdm_buffer_set((uint32_t*)stream->buffer.getWritePointer(), stream->buffer.getBlockSize() / (sizeof(int16_t) * 1));
 
     // set the PDM IRQ priority and enable
     NVIC_SetPriority(PDM_IRQn, PDM_IRQ_PRIORITY);
@@ -196,8 +196,9 @@ void PDM_Mic::setPins(int dinPin, int clkPin) {
     _clkPin = clkPin;
 }
 
-void PDM_Mic::setChannels(int channels) {
-    _channels = channels;
+int PDM_Mic::setChannels(int channels) {
+    _channels = constrain(channels,1,2);
+    return _channels;
 }
 
 int PDM_Mic::setSampleRate(int sampleRate) {
@@ -214,6 +215,10 @@ int PDM_Mic::getSampleRate() {
     return _sampleRate;
 }
 
+int PDM_Mic::getChannels() {
+    return _channels;
+}
+
 void PDM_Mic::IrqHandler(bool halftranfer) {
     if (nrf_pdm_event_check(NRF_PDM_EVENT_STARTED)) {
         nrf_pdm_event_clear(NRF_PDM_EVENT_STARTED);
@@ -226,7 +231,7 @@ void PDM_Mic::IrqHandler(bool halftranfer) {
             }
 
             // switch to the next buffer
-            nrf_pdm_buffer_set((uint32_t*)stream->buffer.getWritePointer(1), stream->buffer.getBlockSize() / (sizeof(int16_t) * _channels));
+            nrf_pdm_buffer_set((uint32_t*)stream->buffer.getWritePointer(1), stream->buffer.getBlockSize() / (sizeof(int16_t) * 1));
             //stream->buffer.incrementWritePointer();
 
             // call receive callback if provided

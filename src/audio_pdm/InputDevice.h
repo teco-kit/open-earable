@@ -13,6 +13,9 @@ public:
 
     virtual int setSampleRate(int _sampleRate) = 0;
     virtual int getSampleRate() = 0;
+    virtual int setChannels(int _channels) = 0;
+    virtual int getChannels() = 0;
+    
     void setBuffer(uint8_t * buffer, int blockSize, int blockCount) {
         stream->buffer.set_buffer(buffer, blockSize, blockCount);
     }

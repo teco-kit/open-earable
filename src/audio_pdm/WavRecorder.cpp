@@ -12,6 +12,7 @@ bool WavRecorder::begin() {
     (*stream)->open();
     _wavWriter->setName(_name);
     _wavWriter->setSampleRate(_sampleRate);
+    _wavWriter->setChannels(_channels);
     const bool writer_begin = _wavWriter->begin();
     if (writer_begin) start();
     return writer_begin;  
@@ -19,6 +20,10 @@ bool WavRecorder::begin() {
 
 void WavRecorder::setSampleRate(int sampleRate) {
     _sampleRate = sampleRate;
+}
+
+void WavRecorder::setChannels(int channels) {
+    _channels = channels;
 }
 
 bool WavRecorder::available() {

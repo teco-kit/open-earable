@@ -23,6 +23,7 @@ public:
 
     void setSampleRate(int sampleRate) override;
     void setGain(int gain);
+    void setChannels(int channels);
 
     void enable_serial_data();
     void disable_serial_data();
@@ -35,6 +36,7 @@ private:
 
     const String _name;
     int _sampleRate = 0;
+    int _channels = 1;
 
     WAVWriter * _wavWriter;
 };
