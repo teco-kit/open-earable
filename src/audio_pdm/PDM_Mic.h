@@ -9,6 +9,9 @@
 #include <pinDefinitions.h>
 #endif
 
+#define DEFAULT_PDM_GAIN  0x50
+#define MIC_OFF  0xFF
+
 const int valid_sample_rates[] = {
         16000,
         20000,
@@ -29,8 +32,6 @@ public:
     virtual ~PDM_Mic();
 
     bool begin() override;
-    bool begin(int channels, int sampleRate);
-
     void end() override;
 
     void start() override;
@@ -47,7 +48,7 @@ public:
     //PORTENTA_H7 min -12 max 51
     //NANO 33 BLE SENSe min 0 max 80
     //NICLA_VISION min 0 max 8
-    void setGain(int gain);
+    void setGain(int8_t gain_left, int8_t gain_right);
 
     void setPins(int dinPin, int clkPin);
     int setChannels(int channels) override;
@@ -71,7 +72,8 @@ private:
     int _channels = 1;
     int _sampleRate = 16000;
 
-    int _gain = 60;
+    int8_t _gain_l = DEFAULT_PDM_GAIN;
+    int8_t _gain_r = DEFAULT_PDM_GAIN;
 
     bool _first = true;
 

@@ -1,5 +1,6 @@
 #include "Recorder.h"
 #include "WavRecorder.h"
+#include "PDM_Mic.h"
 
 uint8_t PDM_BUFFER[pdm_b_size * pdm_b_count] __attribute__((aligned (16)));
 
@@ -77,6 +78,8 @@ void Recorder::print_info() {
         Serial.println("SET");
         if (device->available()) {
             Serial.println("device: available");
+            Serial.print("device channels: ");
+            Serial.println(device->getChannels());
             Serial.print("device samplerate: ");
             Serial.println(device->getSampleRate());
         } else  Serial.println("device: not available");
@@ -118,6 +121,7 @@ void Recorder::setTarget(AudioTarget * target) {
     this->target = target;
     if (!target) return;
     target->setSampleRate(_sampleRate);
+    target->setChannels(_channels);
     if (device) this->target->setStream(&(device->stream));
 }
 
@@ -128,19 +132,25 @@ void Recorder::config_callback(SensorConfigurationPacket *config) {
     // Get sample rate
     int sample_rate = int(config->sampleRate);
 
-    // End sensor if sample rate is 0
-    if (sample_rate == 0) {
-        recorder.stop();
+    // Make sure that pdm mic is not running
+    recorder.stop();
+
+    // only end recording if sample rate is 0 or both mics are turned off
+    if (sample_rate == 0 || (config->latency & 0xFFFF) == 0xFFFF) {
         return;
     }
 
     // Check for valid sample rate
     recorder.setSampleRate(sample_rate);
 
-    recorder.setChannels(2);
+    int8_t gain_l = config->latency & 0xFF;
+    int8_t gain_r = (config->latency >> 8) & 0xFF;
 
-    // Make sure that pdm mic is not running already!
-    recorder.stop();
+    // number of channels
+    recorder.setChannels((gain_l >= 0) + (gain_r >= 0));
+
+    // set gain for each channel
+    pdm_mic.setGain(gain_l, gain_r);
 
     // find the next available file name for the recording
     const String recording_dir = "Recordings";
