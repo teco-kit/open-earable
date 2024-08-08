@@ -32,7 +32,7 @@
 
 String device_name;
 const String firmware_version = "1.4.1";
-const String hardware_version = "1.3.0";
+const String hardware_version = "1.4.0";
 
 bool _data_logger_flag = true;
 
