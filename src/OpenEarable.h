@@ -191,7 +191,7 @@ void OpenEarable::config_callback(SensorConfigurationPacket *config) {
             i2s_player.start();
         }
     }
-    // update_current_led_status(config);
+    update_current_led_status(config);
     //else task_manager.begin();
 }
 
