@@ -72,13 +72,17 @@ void TaskManager::update() {
 
 void TaskManager::update_edge_ml() {
     unsigned int now = millis();
-    if (now - _baro_last >= _baro_delay) {
-        sensorProvider.update_sensor(BARO_TEMP, true);
-        _baro_last = now;
+    if (_baro_delay > 0){
+        if (now - _baro_last >= _baro_delay) {
+            sensorProvider.update_sensor(BARO_TEMP, true);
+            _baro_last = now;
+        }
     }
-    if (now - _imu_last >= _imu_delay) {
-        sensorProvider.update_sensor(ACC_GYRO_MAG, true);
-        _imu_last = now;
+    if (_imu_delay > 0) {
+        if (now - _imu_last >= _imu_delay) {
+            sensorProvider.update_sensor(ACC_GYRO_MAG, true);
+            _imu_last = now;
+        }
     }
     if (now - _edge_ml_last >= _edge_ml_delay) {
         bleHandler_G.update();

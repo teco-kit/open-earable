@@ -13,7 +13,7 @@ public:
 private:
     int _current_conf_num;
 
-    const int _default_loop_delay = 50;
+    const int _default_loop_delay = -1;
     int _baro_delay = _default_loop_delay;
     int _imu_delay = _default_loop_delay;
 
