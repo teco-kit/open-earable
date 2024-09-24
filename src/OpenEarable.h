@@ -5,6 +5,8 @@
 #ifndef EDGE_ML_EARABLE_EDGEML_EARABLE_H
 #define EDGE_ML_EARABLE_EDGEML_EARABLE_H
 
+#include <BLEDevice.h>
+
 #include "EdgeML.h"
 #include <battery_service/Battery_Service.h>
 #include "button_service/Button.h"
