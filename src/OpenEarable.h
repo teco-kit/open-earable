@@ -31,7 +31,7 @@
 #include <utility>
 
 String device_name;
-const String firmware_version = "1.4.1";
+const String firmware_version = "1.5.0";
 const String hardware_version = "1.4.0";
 
 bool _data_logger_flag = true;
@@ -92,6 +92,7 @@ public:
 
         task_manager.begin();
 
+        BLE.setConnectionInterval(0x0006, 0x000C);
         BLE.advertise();
     };
 
@@ -99,9 +100,6 @@ public:
         _battery->update();
 
         task_manager.update();
-
-        //interrupt based
-        //earable_btn.update();
     };
 
     void debug(Stream &stream) {

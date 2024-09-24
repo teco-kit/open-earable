@@ -1,16 +1,15 @@
-#ifndef WAV_RECORDER_SENSOR_H
-#define WAV_RECORDER_SENSOR_H
+#ifndef BLE_STREAM_SENSOR_H
+#define BLE_STREAM_SENSOR_H
 
 #include "EdgeML_Custom.h"
 #include "AudioTarget.h"
 #include <custom_sensor/SensorID_Earable.h>
+#include "../audio_play/SOSFilter.h"
 
-#include "utils/WAVWriter.h"
-
-class WavRecorder : public AudioTarget {
+class BLEStream : public AudioTarget {
 public:
-    WavRecorder(String name);
-    ~WavRecorder();
+    BLEStream();
+    ~BLEStream();
 
     int provide(int n) override;
     bool available() override;
@@ -23,20 +22,15 @@ public:
 
     void setSampleRate(int sampleRate) override;
     void setChannels(int channels) override;
-
-    String get_name();
 private:
     bool _stream = false;
 
     int initial_drop = 1;
 
-    const String _name;
     int _sampleRate = 0;
     int _channels = 1;
 
-    WAVWriter * _wavWriter;
+    SOSFilter * filter;
 };
-
-//extern PDM_MIC_Sensor pdm_mic_sensor;
 
 #endif //OPEN_EARABLE_PDM_MIC_SENSOR_H

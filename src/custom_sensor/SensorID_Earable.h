@@ -3,6 +3,8 @@
 
 #include "EdgeML_Custom.h"
 
+#define AUDIO_STREAM_PACKAGE_SIZE 16
+
 const int SENSOR_COUNT = 3;
 const int MODULE_COUNT_PHYSICAL = 3;
 const int SPECIAL_SENSOR_COUNT = 1;
@@ -22,7 +24,8 @@ const int SpecialSensors[SPECIAL_SENSOR_COUNT] = {
 enum ModuleID {
     MODULE_IMU,
     MODULE_BARO,
-    MODULE_DUMMY
+    MODULE_PDM,
+    //MODULE_DUMMY
 };
 
 const SensorComponent ACC_COMPONENTS[] = {
@@ -42,6 +45,40 @@ const SensorComponent PRESSURE_TEMP_COMPONENTS[] = {
         {"BARO", PARSE_TYPE_FLOAT, "Pressure", "kPa"}
 };
 
+const SensorComponent PDM_MIC_COMPONENTS[] = {
+        {"MIC", PARSE_TYPE_INT16, "0", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "1", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "2", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "3", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "4", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "5", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "6", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "7", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "8", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "9", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "10", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "11", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "12", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "13", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "14", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "15", "AMP"},
+        /*{"MIC", PARSE_TYPE_INT16, "16", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "17", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "18", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "19", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "20", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "21", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "22", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "23", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "24", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "25", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "26", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "27", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "28", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "29", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "30", "AMP"},
+        {"MIC", PARSE_TYPE_INT16, "31", "AMP"},*/
+};
 
 const SensorConfig CONFIG[SENSOR_COUNT] = {
         {
@@ -61,9 +98,9 @@ const SensorConfig CONFIG[SENSOR_COUNT] = {
         {
                 "PDM MIC",
                 PDM_MIC,
-                MODULE_DUMMY,
-                0,
-                {}
+                MODULE_PDM, //MODULE_DUMMY,
+                AUDIO_STREAM_PACKAGE_SIZE,
+                PDM_MIC_COMPONENTS
         },
 };
 

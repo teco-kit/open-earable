@@ -207,9 +207,15 @@ void PDM_Mic::setGain(int8_t gain_left, int8_t gain_right) {
     _gain_l = gain_left;
     _gain_r = gain_right;
 
-    //setChannels((_gain_l >= 0) + (_gain_r >= 0));
-
-    //if (_available) nrf_pdm_gain_set(constrain(_gain_l, 0x00, 0x50), constrain(_gain_r, 0x00, 0x50));
+    if (_available) {
+        if (_channels == 1 && _gain_l < 0) {
+            // right mic active (right and left gain need to be swapped)
+            nrf_pdm_gain_set(constrain(_gain_r, 0x00, 0x50), constrain(_gain_l, 0x00, 0x50));
+        } else {
+            // left mic
+            nrf_pdm_gain_set(constrain(_gain_l, 0x00, 0x50), constrain(_gain_r, 0x00, 0x50));
+        }
+    }
 }
 
 int PDM_Mic::getSampleRate() {

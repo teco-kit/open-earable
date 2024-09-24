@@ -1,5 +1,6 @@
 #include "Recorder.h"
 #include "WavRecorder.h"
+#include "BLEStream.h"
 #include "PDM_Mic.h"
 
 uint8_t PDM_BUFFER[pdm_b_size * pdm_b_count] __attribute__((aligned (16)));
@@ -152,43 +153,49 @@ void Recorder::config_callback(SensorConfigurationPacket *config) {
     // set gain for each channel
     pdm_mic.setGain(gain_l, gain_r);
 
-    // find the next available file name for the recording
-    const String recording_dir = "Recordings";
+    if (((config->latency >> 16) & 0xFF) == 1) {
+        // ocllusion test
+        recorder.setTarget(new BLEStream());
+    } else {
 
-    if (!sd_manager.exists(recording_dir)) sd_manager.mkdir(recording_dir);
+        // find the next available file name for the recording
+        const String recording_dir = "Recordings";
 
-    ExFile file;
-    ExFile dir = sd_manager.sd->open(recording_dir);
+        if (!sd_manager.exists(recording_dir)) sd_manager.mkdir(recording_dir);
 
-    char fileName[64];
-    char * split;
+        ExFile file;
+        ExFile dir = sd_manager.sd->open(recording_dir);
 
-    int n = 1;
+        char fileName[64];
+        char * split;
 
-    // find highest Recording number
-    while (file = dir.openNextFile()) {
-        file.getName(fileName, sizeof(fileName));
+        int n = 1;
 
-        split = strtok(fileName, "_");
-        if (strcmp(split,"Recording") == 0) {
-            split = strtok(NULL, "_");
-            n = max(n, atoi(split) + 1);
+        // find highest Recording number
+        while (file = dir.openNextFile()) {
+            file.getName(fileName, sizeof(fileName));
+
+            split = strtok(fileName, "_");
+            if (strcmp(split,"Recording") == 0) {
+                split = strtok(NULL, "_");
+                n = max(n, atoi(split) + 1);
+            }
         }
-    }
 
-    // file name of the new recording
-    String file_name = "/" + recording_dir + "/Recording_" + String(n) + "_" + String(millis()) + ".wav";
+        // file name of the new recording
+        String file_name = "/" + recording_dir + "/Recording_" + String(n) + "_" + String(millis()) + ".wav";
 
-    if (_rec_debug) {
-        _rec_debug->println("Recording:");
-        _rec_debug->println(file_name);
-    }
+        if (_rec_debug) {
+            _rec_debug->println("Recording:");
+            _rec_debug->println(file_name);
+        }
 
-    // set WaveRecorder
-    recorder.setTarget(new WavRecorder(file_name));
+        // set WaveRecorder
+        recorder.setTarget(new WavRecorder(file_name));
 
-    // Start pdm mic
-    recorder.record();
+        // Start pdm mic
+        recorder.record();
+        }
 }
 
 Recorder recorder;
