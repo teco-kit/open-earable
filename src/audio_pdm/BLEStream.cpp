@@ -10,11 +10,11 @@ const float a[FILT_ORDER][3] = {{1, -1.36511724,  0.47759225},
 const float b[FILT_ORDER][3] = {{9.33498613e-04, 1.86699723e-03, 9.33498613e-04},
                                 {1, 2, 1}};
 
-int16_t ble_buffer[AUDIO_STREAM_PACKAGE_SIZE];
-int16_t sos_buffer[pdm_b_size / sizeof(int16_t)];
-int index_ble = 0;
-//const int down_sample = 32;
+
 const int down_sample = 8;
+int16_t ble_buffer[AUDIO_STREAM_PACKAGE_SIZE];
+int16_t sos_buffer[down_sample];
+int index_ble = 0;
 
 BLEStream::BLEStream() {
     filter = new SOSFilter(FILT_ORDER, b, a);
@@ -26,12 +26,6 @@ BLEStream::~BLEStream() {
 
 bool BLEStream::begin() {
     (*stream)->open();
-    
-    //_wavWriter->setSampleRate(_sampleRate);
-    //_wavWriter->setChannels(_channels);
-    //const bool writer_begin = _wavWriter->begin();
-    //if (writer_begin) start();
-    //return writer_begin;
 
     start();
     return true;
@@ -80,10 +74,10 @@ int BLEStream::provide(int max_cont) {
     const int block_size = (*stream)->buffer.getBlockSize();
 
     for (int i = 0; i<cont; i++) {
-        memcpy(sos_buffer, read_pointer + i * block_size, block_size);
-        filter->update((int16_t *) sos_buffer, block_size / sizeof(int16_t));
-        for (int k = 0; k < block_size / sizeof(int16_t); k+=down_sample) {
-            ble_buffer[index_ble++] = sos_buffer[k];
+        for (int k = 0; k < block_size; k+=down_sample * sizeof(int16_t)) {
+            memcpy(sos_buffer, read_pointer + i * block_size + k, down_sample * sizeof(int16_t));
+            filter->update((int16_t *) sos_buffer, down_sample);
+            ble_buffer[index_ble++] = sos_buffer[0];
             if (index_ble == AUDIO_STREAM_PACKAGE_SIZE) {
                 index_ble = 0;
 
