@@ -193,9 +193,9 @@ void Recorder::config_callback(SensorConfigurationPacket *config) {
         // set WaveRecorder
         recorder.setTarget(new WavRecorder(file_name));
 
-        // Start pdm mic
-        recorder.record();
         }
+    // Start pdm mic
+    recorder.record();
 }
 
 Recorder recorder;
