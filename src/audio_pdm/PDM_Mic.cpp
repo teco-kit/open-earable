@@ -172,6 +172,8 @@ void PDM_Mic::stop() {
 }
 
 void PDM_Mic::end() {
+    //if (_running) stop();
+
     // disable PDM and IRQ
     nrf_pdm_disable();
 

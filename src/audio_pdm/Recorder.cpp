@@ -144,9 +144,9 @@ void Recorder::config_callback(SensorConfigurationPacket *config) {
     // Check for valid sample rate
     recorder.setSampleRate(sample_rate);
 
-    int8_t gain_r = config->latency & 0xFF;
-    int8_t gain_l = (config->latency >> 8) & 0xFF;
-
+    int8_t gain_l = config->latency & 0xFF;
+    int8_t gain_r = (config->latency >> 8) & 0xFF;
+    
     // number of channels
     recorder.setChannels((gain_l >= 0) + (gain_r >= 0));
 
@@ -157,7 +157,6 @@ void Recorder::config_callback(SensorConfigurationPacket *config) {
         // ocllusion test
         recorder.setTarget(new BLEStream());
     } else {
-
         // find the next available file name for the recording
         const String recording_dir = "Recordings";
 
@@ -190,8 +189,8 @@ void Recorder::config_callback(SensorConfigurationPacket *config) {
             _rec_debug->println(file_name);
         }
 
-        // set WaveRecorder
-        recorder.setTarget(new WavRecorder(file_name));
+    // set WaveRecorder
+    recorder.setTarget(new WavRecorder(file_name));
 
         }
     // Start pdm mic

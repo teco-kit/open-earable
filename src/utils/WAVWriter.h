@@ -12,7 +12,7 @@ class WAVWriter {
 public:
     WAVWriter();
     ~WAVWriter();
-
+    
     bool begin();
     void end();
 

@@ -11,7 +11,8 @@ public:
     void setup() override {
         IMU_Sensor * imu = new IMU_Sensor();
         BARO_Sensor * baro = new BARO_Sensor();
-        // DummySensor * dummy = new DummySensor();
+        //DummySensor * dummy = new DummySensor();
+        //PDM_Sensor * mic = new PDM_Sensor();
 
         SensorInterface ** modules = new SensorInterface * [MODULE_COUNT_PHYSICAL] {imu, baro, &pdm_sensor};
 
