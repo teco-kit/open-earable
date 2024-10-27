@@ -6,10 +6,6 @@
 #define EDGE_ML_EARABLE_EDGEML_EARABLE_H
 
 #include <BLEDevice.h>
-<<<<<<< HEAD
-=======
-//#include <BLEServer.h>
->>>>>>> 5a63f42c29641b46282ff7efb579fc1110031275
 
 #include "EdgeML.h"
 #include <battery_service/Battery_Service.h>
