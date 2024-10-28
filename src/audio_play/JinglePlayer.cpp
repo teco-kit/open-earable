@@ -7,15 +7,15 @@ const uint16_t NOTIFICATION_WAV[] PROGMEM = {
 };
 
 const uint16_t ERROR_WAV[] PROGMEM = {
-    #include "jingles/error_wav.txt"
+    #include "jingles/ERROR_WAV.txt"
 };
 
 const uint16_t SUCCESS_WAV[] PROGMEM = {
-    #include "jingles/success_wav.txt"
+    #include "jingles/SUCCESS_WAV.txt"
 };
 
 const uint16_t ALARM_WAV[] PROGMEM = {
-    #include "jingles/alarm_wav.txt"
+    #include "jingles/ALARM_WAV.txt"
 };
 
 const uint16_t CLICK_WAV[] PROGMEM = {

@@ -1,4 +1,4 @@
-#include "PDM_mic.h"
+#include "PDM_Mic.h"
 #include "utils/BufferedOutputStream.h"
 
 #if defined(ARDUINO_ARCH_NRF52840)
