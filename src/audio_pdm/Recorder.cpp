@@ -144,8 +144,8 @@ void Recorder::config_callback(SensorConfigurationPacket *config) {
     // Check for valid sample rate
     recorder.setSampleRate(sample_rate);
 
-    int8_t gain_l = config->latency & 0xFF;
-    int8_t gain_r = (config->latency >> 8) & 0xFF;
+    int8_t gain_r = config->latency & 0xFF;
+    int8_t gain_l = (config->latency >> 8) & 0xFF;
     
     // number of channels
     recorder.setChannels((gain_l >= 0) + (gain_r >= 0));
