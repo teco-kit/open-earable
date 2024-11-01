@@ -15,7 +15,7 @@
 #define DEBUG true
 
 // Change name to OELeft or OERight before flashing ("OpenEarable" if left as default value)
-String d_name = "OERight";
+String d_name = "OpenEarable";
 
 void setup()
 {
