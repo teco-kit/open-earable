@@ -10,7 +10,7 @@ SOSFilter::SOSFilter(int order, const float (*b)[3], const float (*a)[3]) {
     //buffer.resize(order, std::vector<float>(2, 0.0f));
     buffer = new float*[order];
     for (int i = 0; i < order; ++i) {
-        buffer[i] = new float[2]{0.0f, 0.0f};
+        buffer[i] = new float[2]{0.0f, 0.0f};  // Speicher für 2 Verzögerungen pro Sektion
     }
 }
 

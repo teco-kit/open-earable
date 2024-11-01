@@ -1,38 +1,35 @@
-#include "SD_Logger.h"
+#include "BARO_Logger.h"
 
 #include <utility>
 
-ExFatFile SD_Logger::_file;
-bool SD_Logger::_opened = false;
-char SD_Logger::_buffer[LOGGER_BUFFER_SIZE];
-int SD_Logger::_index = 0;
-String SD_Logger::_name = "Log.csv";
-Stream * _debug{};
+ExFatFile BAROLogger::_file;
+bool BAROLogger::_opened = false;
+char BAROLogger::_buffer[LOGGER_BUFFER_SIZE];
+int BAROLogger::_index = 0;
+String BAROLogger::_name = "Baro.csv";
+Stream * _baro_debug{};
 
-bool SD_Logger::begin() {
+bool BAROLogger::begin() {
     _index = 0;
     if(!sd_manager.begin()) return false;
-    if (_debug) _debug->println("Initialising file");
-    if (!open_file()) return false;
-    write_header();
-    return _file.isOpen();
+    return true;
 }
 
-void SD_Logger::debug(Stream &stream) {
-    _debug = &stream;
-    _debug->println("SDLogger debug set correctly!");
+void BAROLogger::debug(Stream &stream) {
+    _baro_debug = &stream;
+    _baro_debug->println("BAROLogger debug set correctly!");
 }
 
-void SD_Logger::end() {
+void BAROLogger::end() {
     //sd_manager.end();
 }
 
-void SD_Logger::set_name(String name) {
+void BAROLogger::set_name(String name) {
     _name = std::move(name);
     _opened = false;
 }
 
-void SD_Logger::data_callback(int id, unsigned int timestamp, const String & data_string) {
+void BAROLogger::data_callback(int id, unsigned int timestamp, const String & data_string) {
     if (id == -1) {
         dump_to_sd();
         _file.close();
@@ -40,8 +37,7 @@ void SD_Logger::data_callback(int id, unsigned int timestamp, const String & dat
         return;
     };
 
-    String text = String(id);
-    text += ", " + String(timestamp);
+    String text = String(timestamp);
     text += ", " + data_string;
     text += "\r\n";
 
@@ -53,7 +49,28 @@ void SD_Logger::data_callback(int id, unsigned int timestamp, const String & dat
     _index += text.length() - 1; // -1 to remove null terminator
 }
 
-void SD_Logger::dump_to_sd() {
+void BAROLogger::config_callback(SensorConfigurationPacket *config) {
+    
+    if (config->sampleRate == 0) {
+        if (_opened){
+            dump_to_sd();
+            _file.close();
+            _opened = false;
+        }
+        return;
+    }
+
+    if (_baro_debug) _baro_debug->println("Initialising baro file");
+    if (!open_file()){ 
+        if (_baro_debug) _baro_debug->println("Error opening the BARO file");
+        return;
+    }
+    write_header();
+    if (_file.isOpen())
+        task_manager.begin(config->sampleRate, -1);
+}
+
+void BAROLogger::dump_to_sd() {
     if (!open_file()) return;
     if (_index == 0) return;
     sd_manager.write_block(&_file, (uint8_t*)_buffer, _index);
@@ -61,18 +78,18 @@ void SD_Logger::dump_to_sd() {
     _index = 0;
 }
 
-void SD_Logger::write_header() {
+void BAROLogger::write_header() {
     _index = 0;
-    String header = "ID, TIMESTAMP, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9\n\r";
+    String header = "timestamp,temp,pressure\n\r ";
     header.toCharArray(&(_buffer[_index]), header.length());
     _index += header.length() - 1; // -1 to remove null terminator
     dump_to_sd();
 }
 
-bool SD_Logger::open_file() {
+bool BAROLogger::open_file() {
     if (_opened) return true;
     // find the next available file name for the recording
-    const String logs_dir = "Logs";
+    const String logs_dir = "Baro";
 
     if (!sd_manager.exists(logs_dir)) sd_manager.mkdir(logs_dir);
 
@@ -89,18 +106,18 @@ bool SD_Logger::open_file() {
         file.getName(fileName, sizeof(fileName));
 
         split = strtok(fileName, "_");
-        if (strcmp(split,"Log") == 0) {
+        if (strcmp(split,"Baro") == 0) {
             split = strtok(NULL, "_");
             n = max(n, atoi(split) + 1);
         }
     }
 
     // file name of the new recording
-    _name = "/" + logs_dir + "/Log_" + String(n) + "_" + String(millis()) + ".csv";
+    _name = "/" + logs_dir + "/Baro_" + String(n) + "_" + String(millis()) + ".csv";
 
-    if (_debug) {
-        _debug->println("Log filename:");
-        _debug->println(_name);
+    if (_baro_debug) {
+        _baro_debug->println("Log filename:");
+        _baro_debug->println(_name);
     }
 
     _file = sd_manager.openFile(_name, true);

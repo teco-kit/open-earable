@@ -6,7 +6,6 @@
 #define EDGE_ML_EARABLE_EDGEML_EARABLE_H
 
 #include <BLEDevice.h>
-//#include <BLEServer.h>
 
 #include "EdgeML.h"
 #include <battery_service/Battery_Service.h>
@@ -28,15 +27,18 @@
 
 #include <task_manager/TaskManager.h>
 
-#include <sd_logger/SD_Logger.h>
+#include <sd_logger/IMU_Logger.h>
+#include <sd_logger/BARO_Logger.h>
 
 #include <utility>
 
-const String device_name = "OpenEarable";
+String device_name;
 const String firmware_version = "1.4.0";
 const String hardware_version = "1.4.0";
 
-bool _data_logger_flag = false;
+bool _data_logger_flag = true;
+
+uint8_t led_color[3] = {0, 0, 0};
 
 void data_callback(int id, unsigned int timestamp, uint8_t * data, int size);
 void config_callback(SensorConfigurationPacket *config);
@@ -45,8 +47,9 @@ class OpenEarable {
 public:
     OpenEarable() = default;
 
-    void begin() {
-        Serial.begin(0);
+    void begin(String d_name) {
+
+        device_name = d_name;
 
         _interface = new SensorManager_Earable();
         _battery = new Battery_Service();
@@ -54,14 +57,18 @@ public:
         sd_manager.begin();
 
         edge_ml_generic.set_config_callback(config_callback);
-        //edge_ml_generic.set_data_callback(data_callback);
+        edge_ml_generic.set_data_callback(data_callback);
 
         if (_debug) {
             _battery->debug(*_debug);
+            IMULogger::debug(*_debug);
+            BAROLogger::debug(*_debug);
+            Recorder::debug(*_debug);
         }
 
         if (_data_logger_flag) {
-            SD_Logger::begin();
+            IMULogger::begin();
+            BAROLogger::begin();
         }
 
         // Can both be initialized without extra cost
@@ -130,19 +137,53 @@ private:
     static void data_callback(int id, unsigned int timestamp, uint8_t * data, int size) {
         if (_data_logger_flag) {
             String data_string = edge_ml_generic.parse_to_string(id, data);
-            SD_Logger::data_callback(id, timestamp, data_string);
+            if (id == BARO_TEMP) BAROLogger::data_callback(id, timestamp, data_string);
+            else if (id == ACC_GYRO_MAG) IMULogger::data_callback(id, timestamp, data_string);
         }
     }
 
     static void config_callback(SensorConfigurationPacket *config);
+    static void update_current_led_status(SensorConfigurationPacket *config);
 };
 
 OpenEarable open_earable;
 
+void OpenEarable::update_current_led_status(SensorConfigurationPacket *config){
+
+    if (config->sensorId == PDM_MIC) {
+        if (int(config->sampleRate) > 0) {
+            led_color[0] = 255;
+        } else {
+            led_color[0] = 0;
+        }
+    } else if (config->sensorId == BARO_TEMP) {
+        if (int(config->sampleRate) > 0) {
+            led_color[1] = 255;
+        } else {
+            led_color[1] = 0;
+        }
+    } else if (config->sensorId == ACC_GYRO_MAG) {
+        if (int(config->sampleRate) > 0) {
+            led_color[2] = 255;
+        } else {
+            led_color[2] = 0;
+        }
+    }
+
+    if (open_earable._debug) {
+        open_earable._debug->println("Current_status: ");
+        for (int i = 0; i < 3; i++) {
+            open_earable._debug->println(led_color[i]);
+        }
+    }
+
+    earable_led.set_color(led_color);
+}
+
 void OpenEarable::config_callback(SensorConfigurationPacket *config) {
     if (config->sensorId == PDM_MIC) Recorder::config_callback(config);
-    else if (config->sensorId == BARO_TEMP) task_manager.begin(config->sampleRate, -1);
-    else if (config->sensorId == ACC_GYRO_MAG) task_manager.begin(-1, config->sampleRate);
+    else if (config->sensorId == BARO_TEMP) BAROLogger::config_callback(config);
+    else if (config->sensorId == ACC_GYRO_MAG) IMULogger::config_callback(config);
     else {
         if (i2s_player.is_running()) {
             i2s_player.stop();
@@ -150,6 +191,7 @@ void OpenEarable::config_callback(SensorConfigurationPacket *config) {
             i2s_player.start();
         }
     }
+    update_current_led_status(config);
     //else task_manager.begin();
 }
 

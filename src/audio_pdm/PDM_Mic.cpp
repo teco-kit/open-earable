@@ -104,7 +104,7 @@ bool PDM_Mic::begin() {
 
         case 1:
             if (_gain_l < 0) {
-                // right mic active (right and left gain need to be swapped)
+                // right mic
                 nrf_pdm_mode_set(NRF_PDM_MODE_MONO, NRF_PDM_EDGE_LEFTRISING);
                 nrf_pdm_gain_set(constrain(_gain_r, 0x00, 0x50), constrain(_gain_l, 0x00, 0x50));
             } else {
@@ -112,7 +112,7 @@ bool PDM_Mic::begin() {
                 nrf_pdm_mode_set(NRF_PDM_MODE_MONO, NRF_PDM_EDGE_LEFTFALLING);
                 nrf_pdm_gain_set(constrain(_gain_l, 0x00, 0x50), constrain(_gain_r, 0x00, 0x50));
             }
-            
+
             break;
 
         default:
@@ -212,7 +212,7 @@ int PDM_Mic::setSampleRate(int sampleRate) {
 void PDM_Mic::setGain(int8_t gain_left, int8_t gain_right) {
     _gain_l = gain_left;
     _gain_r = gain_right;
-    
+
     if (_available) {
         if (_channels == 1 && _gain_l < 0) {
             // right mic active (right and left gain need to be swapped)

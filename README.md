@@ -17,13 +17,16 @@ This firmware is compatible with hardware version:
 
 ## Table of Contents
 - [Introduction](#Introduction)
+  - [Note about v1.4.0](#note-about-v140)
 - [Setup](#Setup)
-  - [Arduino IDE](#Arduino-IDE) 
-  - [Arduino Libraries](#Arduino-Libraries)
-  - [SD Card Setup](#SD-Card-Setup)
-  - [SPI Setup](#SPI-Setup)
-  - [sdfat Library Setup](#sdfat-Library-Setup)
-  - [BMP280 Library Setup](#BMP280-Library-Setup)
+  - [Automatic setup (Preferred)](#automatic-setup-preferred-method)
+  - [Manual setup (Not recommended)](#manual-setup-not-recommended)
+    - [Arduino IDE](#Arduino-IDE)
+    - [Arduino Libraries](#Arduino-Libraries)
+    - [SD Card Setup](#SD-Card-Setup)
+    - [SPI Setup](#SPI-Setup)
+    - [sdfat Library Setup](#sdfat-Library-Setup)
+    - [BMP280 Library Setup](#BMP280-Library-Setup)
 - [Usage](#Usage)
   - [Install OpenEarable](#Install-OpenEarable)
   - [Default Firmware](#Default-Firmware)
@@ -44,16 +47,79 @@ This firmware is compatible with hardware version:
 OpenEarable is designed to enable ear-based sensing applications by offering a flexible and open-source hardware platform. It incorporates a range of sensors, including a 9-axis inertial measurement unit, an ear canal pressure and temperature sensor, an inward-facing ultrasound microphone, a speaker, a push button, and a controllable RGB LED. With these features, OpenEarable provides researchers and developers with the ability to explore various application scenarios. 
 For more information visit the [OpenEarable](https://open-earable.teco.edu/) website.
 
-OpenEarable is controlled and streams sensor data via BLE (Bluetooth Low Energy). Audio is played from and recorded to the internal SD card (required card SanDisk Extreme Class 3, must be formatted as exFAT). OpenEarable is compatible with the provided [dashboard](https://github.com/OpenEarable/dashboard) and [edge-ml](https://edge-ml.org/). 
+OpenEarable is controlled and streams sensor data via BLE (Bluetooth Low Energy). Audio is played from and recorded to the internal SD card (required card SanDisk Extreme Class 3, must be formatted as exFAT). OpenEarable is compatible with the provided [dashboard](https://github.com/OpenEarable/dashboard) and [edge-ml](https://edge-ml.org/).
+
+### Note about firmwares >v1.4.0
+
+#### SD card logging
+
+Version 1.4.0 of the firmware is designed for offline data collection. By default, all data (IMU, Baro/Temp and Audio) are logged on the SD card. **Choose a very fast SDCard!!** Here's some examples we tested:
+- Samsung EVO Plus
+- SanDisk Extreme Pro
+
+Note that even for the same class, not all SDcard from different manufacturers have the same performance!!
+
+#### Bluetooth streaming
+
+Because the main focus is to log the data locally on the SD card, this version of the firmware streams limited amount of data over BLE. By default, the streaming over BLE happens at 10 Hz, no matter what sampling rate you set for the recordings.
+
+#### RGB led
+
+In order to let researcher know whether the device is recording or not without being always connected to the dashboard, the RGB led is used to show the recording status. If a certain colour is on, then the corresponding sensor data is being recorded:
+
+- Red: Microphone
+- Green: Baro/Temp
+- Blue: IMU
+
+Obviously, any combination of sensors enabled/disable will result in a mixed colour for the led (within the hardware limits!!) (i.e. if microphone and baro/tempo are being recorded then the led would be yellow).
+
+#### Device naming
+
+The new firmware introduces the possibility to change the names of the devices programmatically. This simplifies the usage in data collections where a left and a right earable are used. By default, the name is "OpenEarable" as per previous firmwares.
+The left or right names can be given when programming and **MUST BE** `OELeft` or `OERight`.
+The firmware will then 
+
+#### Dashboard
+
+In order to use the new version of the firmware, especially if the custom names are used for left/right earables, we suggest to use the modified dashboard available [here](https://github.com/ThiasTux/openearable-dashboard).
 
 
 ## Setup
 **⚠️ $${\rm\color{red}Please~Note:}$$ We recommend deploying the firmware using the  [open-earable-PlatformIO wrapper](https://github.com/OpenEarable/open-earable-PlatformIO).**
 
-### Arduino IDE
+### Automatic setup (Preferred method!!)
+
+Clone this repo in your Arduino library folder, usually in under `Documents/Arduino/libraries`:
+
+```bash
+git clone https://github.com/ThiasTux/open-earable OpenEarable
+```
+
+If you are on Linux or macOS, you can setup you environment using the script in `script/install.sh`. In order to so, please install the `arduino-cli` following the guide [here](https://arduino.github.io/arduino-cli/0.35/installation/).
+
+#### macOS
+For macos using brew:
+
+```bash
+brew install arduino-cli
+```
+
+#### Env setup
+
+To setup the environment, navigate to `scripts` and then run:
+
+```bash
+./install.sh
+```
+
+The script uses `arduino-cli` to download and install all the dependencies (i.e. board, libraries, etc.) and to make the required changes to the libraries. The script also generate a new board so that the original Mbed OS Nano installation remains untouched in case you are developing also with other Nano boards (plus it doesn't get touched if the Nano board installation gets updated).
+
+### Manual setup (Not recommended)
+
+#### Arduino IDE
 Download and install the Arduino IDE. OpenEarable is based on the "Arduino Nano 33 BLE Sense" board. Therefore, you first have to install the required dependencies ("Arduino Mbed OS Nano Boards" via boards manager) in your Arduino IDE following this [Setup Guide](https://docs.arduino.cc/software/ide-v2/tutorials/ide-v2-board-manager#mbed-os-nano).
 
-### Arduino Libraries
+#### Arduino Libraries
 The following Arduino Libraries have to be installed in your Arduino IDE by navigating to `Sketch -> Include Library -> Manage Libraries`:
 - [EdgeML-Arduino (version 1.3.3)](https://github.com/edge-ml/EdgeML-Arduino), which includes the following dependencies that are also required and automatically installed:
 	- [ArduinoBLE](https://github.com/arduino-libraries/ArduinoBLE)
@@ -62,11 +128,11 @@ The following Arduino Libraries have to be installed in your Arduino IDE by navi
 - [SdFat - Adafruit Fork](https://github.com/adafruit/SdFat)
 
 
-### SD Card Setup
+#### SD Card Setup
 In order to be compatible with the OpenEarable library the SD card needs to be formatted with the exFAT format.
 Make sure to have a sufficiently fast SD card. (Required SD Card: SandDisk class 10 and class A30)
 
-### SPI, Wire, and Variant Setup
+#### SPI, Wire, and Variant Setup
 
 The default Arduino implementation of the SPI library does not meet the required speed. To address this, optimized SPI files are provided. Follow the steps below to integrate these files into Arduino.
 All referenced files can be found in the "resources" folder in the "spi_files" subfolder.
@@ -93,7 +159,7 @@ To fully integrate the optimized SPI files, changes to the Arduino Nano 33 BLE b
     
 10. Navigate back to the `Arduino15` folder. Navigate to `packages/arduino/hardware/mbed_nano/4.0.4/variants/ARDUINO_NANO33BLE`. Replace `pins_arduino.h` and `variant.cpp `with the files provided under `resources/variant` of this repository.
 
-### sdFat Library Setup
+#### sdFat Library Setup
 One of the library dependencies is the SdFat library from Bill Greiman.
 This library is used to send data to the SD card.
 To achieve the desired write speeds of up to 1.5Mbps the library has to be modified slighlty.
@@ -102,16 +168,17 @@ To achieve the desired write speeds of up to 1.5Mbps the library has to be modif
    
 3. Inside the `src` folder, replace the `SdFatConfig.h` with the provided `SdFatConfig.h` file found in the `resources/sdfat_config` folder of this repository.
 
-### BMP280 Library Setup
+#### BMP280 Library Setup
 The BMP280 library has to be slightly modified.
 1. Go to the `Arduino/libraries` folder (commonly found in your `Documents` folder) and locate the `Adafruit_BMP280_Library` folder.
 2. Replace the files `Adafruit_BMP280.cpp` and `Adafruit_BMP280.h` with the files found in the `resources/Adafruit_BMP280_Library` folder of this repository.
    
 
-### Reboot
+#### Reboot
 To make sure that all your changes are applied correctly, restart your computer.
 
 ## Usage
+
 ### Install OpenEarable
 Now that all dependencies are configured, the last step is to install this repository as a library as follows:
 
@@ -146,7 +213,7 @@ void loop()
 With this minimum sketch, all internal functionality is activated and OpenEarable becomes controllable via our [Dashboard](https://github.com/OpenEarable/dashboard), via [EdgeML](https://edge-ml.org/), and via the BLE API.
 
 ### Flashing
-To flash the firmware, make sure you select `Arduino Nano 33 BLE` as target and the port that your OpenEarable is connected to. Then simply press the `Upload` arrow.
+To flash the firmware, make sure you select `Openearable` as target (or `Arduino Nano 33 BLE` if you used the manual setup procedure) and the port that your OpenEarable is connected to. Then simply press the `Upload` arrow.
 
 ### Dashboard
 

@@ -13,13 +13,13 @@ public:
 private:
     int _current_conf_num;
 
-    const int _default_loop_delay = 50;
+    const int _default_loop_delay = -1;
     int _baro_delay = _default_loop_delay;
     int _imu_delay = _default_loop_delay;
 
     //float _rate_factor = 1.25;
 
-    int _edge_ml_delay;
+    int _edge_ml_delay = 20;
     unsigned int _edge_ml_last;
     unsigned int _baro_last;
     unsigned int _imu_last;

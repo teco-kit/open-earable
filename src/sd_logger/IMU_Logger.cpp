@@ -1,38 +1,35 @@
-#include "SD_Logger.h"
+#include "IMU_Logger.h"
 
 #include <utility>
 
-ExFatFile SD_Logger::_file;
-bool SD_Logger::_opened = false;
-char SD_Logger::_buffer[LOGGER_BUFFER_SIZE];
-int SD_Logger::_index = 0;
-String SD_Logger::_name = "Log.csv";
-Stream * _debug{};
+ExFatFile IMULogger::_file;
+bool IMULogger::_opened = false;
+char IMULogger::_buffer[LOGGER_BUFFER_SIZE];
+int IMULogger::_index = 0;
+String IMULogger::_name = "Imu.csv";
+Stream * _imu_debug{};
 
-bool SD_Logger::begin() {
+bool IMULogger::begin() {
     _index = 0;
     if(!sd_manager.begin()) return false;
-    if (_debug) _debug->println("Initialising file");
-    if (!open_file()) return false;
-    write_header();
-    return _file.isOpen();
+    return true;
 }
 
-void SD_Logger::debug(Stream &stream) {
-    _debug = &stream;
-    _debug->println("SDLogger debug set correctly!");
+void IMULogger::debug(Stream &stream) {
+    _imu_debug = &stream;
+    _imu_debug->println("IMULogger debug set correctly!");
 }
 
-void SD_Logger::end() {
+void IMULogger::end() {
     //sd_manager.end();
 }
 
-void SD_Logger::set_name(String name) {
+void IMULogger::set_name(String name) {
     _name = std::move(name);
     _opened = false;
 }
 
-void SD_Logger::data_callback(int id, unsigned int timestamp, const String & data_string) {
+void IMULogger::data_callback(int id, unsigned int timestamp, const String & data_string) {
     if (id == -1) {
         dump_to_sd();
         _file.close();
@@ -40,8 +37,7 @@ void SD_Logger::data_callback(int id, unsigned int timestamp, const String & dat
         return;
     };
 
-    String text = String(id);
-    text += ", " + String(timestamp);
+    String text = String(timestamp);
     text += ", " + data_string;
     text += "\r\n";
 
@@ -53,7 +49,28 @@ void SD_Logger::data_callback(int id, unsigned int timestamp, const String & dat
     _index += text.length() - 1; // -1 to remove null terminator
 }
 
-void SD_Logger::dump_to_sd() {
+void IMULogger::config_callback(SensorConfigurationPacket *config) {
+    
+    if (config->sampleRate == 0) {
+        if (_opened){
+            dump_to_sd();
+            _file.close();
+            _opened = false;
+        }
+        return;
+    }
+
+    if (_imu_debug) _imu_debug->println("Initialising imu file");
+    if (!open_file()){ 
+        if (_imu_debug) _imu_debug->println("Error opening the IMU file");
+        return;
+    }
+    write_header();
+    if (_file.isOpen())
+        task_manager.begin(-1, config->sampleRate);
+}
+
+void IMULogger::dump_to_sd() {
     if (!open_file()) return;
     if (_index == 0) return;
     sd_manager.write_block(&_file, (uint8_t*)_buffer, _index);
@@ -61,18 +78,18 @@ void SD_Logger::dump_to_sd() {
     _index = 0;
 }
 
-void SD_Logger::write_header() {
+void IMULogger::write_header() {
     _index = 0;
-    String header = "ID, TIMESTAMP, Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, Data9\n\r";
+    String header = "timestamp,acc_x,acc_y,acc_z,gyro_x,gyro_y,gyro_z,magn_x,magn_y,magn_z\n\r";
     header.toCharArray(&(_buffer[_index]), header.length());
     _index += header.length() - 1; // -1 to remove null terminator
     dump_to_sd();
 }
 
-bool SD_Logger::open_file() {
+bool IMULogger::open_file() {
     if (_opened) return true;
     // find the next available file name for the recording
-    const String logs_dir = "Logs";
+    const String logs_dir = "Imu";
 
     if (!sd_manager.exists(logs_dir)) sd_manager.mkdir(logs_dir);
 
@@ -89,18 +106,18 @@ bool SD_Logger::open_file() {
         file.getName(fileName, sizeof(fileName));
 
         split = strtok(fileName, "_");
-        if (strcmp(split,"Log") == 0) {
+        if (strcmp(split,"Imu") == 0) {
             split = strtok(NULL, "_");
             n = max(n, atoi(split) + 1);
         }
     }
 
     // file name of the new recording
-    _name = "/" + logs_dir + "/Log_" + String(n) + "_" + String(millis()) + ".csv";
+    _name = "/" + logs_dir + "/Imu_" + String(n) + "_" + String(millis()) + ".csv";
 
-    if (_debug) {
-        _debug->println("Log filename:");
-        _debug->println(_name);
+    if (_imu_debug) {
+        _imu_debug->println("Log filename:");
+        _imu_debug->println(_name);
     }
 
     _file = sd_manager.openFile(_name, true);

@@ -5,12 +5,13 @@
 #include "EdgeML_Custom.h"
 
 #include "utils/SDManager.h"
+#include <generic/Debug.h>
 
 #include "AudioTarget.h"
 #include "utils/BufferedInputStream.h"
 #include "InputDevice.h"
 
-const int pdm_b_size = 6144; //4096;
+const int pdm_b_size = 4096; //4096;
 const int pdm_b_count = 8;
 extern uint8_t PDM_BUFFER[pdm_b_size * pdm_b_count] __attribute__((aligned (16)));
 
@@ -37,6 +38,7 @@ public:
     void print_info();
 
     static void config_callback(SensorConfigurationPacket * config);
+    static void debug(Stream &stream);
     
     AudioTarget * target;
     InputDevice * device;

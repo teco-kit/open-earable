@@ -5,6 +5,8 @@
 
 uint8_t PDM_BUFFER[pdm_b_size * pdm_b_count] __attribute__((aligned (16)));
 
+Stream * _rec_debug{};
+
 Recorder::Recorder() {
 
 }
@@ -49,6 +51,11 @@ void Recorder::end() {
     device->end();
     target->end();
     _available = false;
+}
+
+void Recorder::debug(Stream &stream) {
+    _rec_debug = &stream;
+    _rec_debug->println("Recorder debug set correctly!");
 }
 
 void Recorder::print_info() {
@@ -137,8 +144,8 @@ void Recorder::config_callback(SensorConfigurationPacket *config) {
     // Check for valid sample rate
     recorder.setSampleRate(sample_rate);
 
-    int8_t gain_l = config->latency & 0xFF;
-    int8_t gain_r = (config->latency >> 8) & 0xFF;
+    int8_t gain_r = config->latency & 0xFF;
+    int8_t gain_l = (config->latency >> 8) & 0xFF;
     
     // number of channels
     recorder.setChannels((gain_l >= 0) + (gain_r >= 0));
@@ -177,10 +184,15 @@ void Recorder::config_callback(SensorConfigurationPacket *config) {
         // file name of the new recording
         String file_name = "/" + recording_dir + "/Recording_" + String(n) + "_" + String(millis()) + ".wav";
 
-        // set WaveRecorder
-        recorder.setTarget(new WavRecorder(file_name));
-    }
+        if (_rec_debug) {
+            _rec_debug->println("Recording:");
+            _rec_debug->println(file_name);
+        }
 
+    // set WaveRecorder
+    recorder.setTarget(new WavRecorder(file_name));
+
+        }
     // Start pdm mic
     recorder.record();
 }
